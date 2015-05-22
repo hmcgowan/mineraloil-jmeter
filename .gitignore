@@ -1,0 +1,12 @@
+# maven
+target/
+
+# idea
+.idea/
+*.iml
+.ipr
+
+# OS
+.DS_Store
+*~
+*.versionsBackup
