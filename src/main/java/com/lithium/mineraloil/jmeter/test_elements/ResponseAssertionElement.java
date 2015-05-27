@@ -2,6 +2,7 @@ package com.lithium.mineraloil.jmeter.test_elements;
 
 import lombok.experimental.Builder;
 import org.apache.jmeter.assertions.ResponseAssertion;
+import org.apache.jmeter.assertions.gui.AssertionGui;
 import org.apache.jmeter.testelement.TestElement;
 
 @Builder
@@ -16,10 +17,10 @@ public class ResponseAssertionElement extends JMeterStepImpl<ResponseAssertionEl
 
     public TestElement getTestElement() {
         ResponseAssertion assertion = new ResponseAssertion();
-        assertion.setProperty(TestElement.GUI_CLASS, "org.apache.jmeter.assertions.gui.AssertionGui");
-        assertion.setProperty(TestElement.TEST_CLASS, "org.apache.jmeter.assertions.ResponseAssertion");
-        assertion.setProperty(TestElement.ENABLED, true);
+        assertion.setProperty(TestElement.GUI_CLASS, AssertionGui.class.getName());
+        assertion.setProperty(TestElement.TEST_CLASS, ResponseAssertion.class.getName());
         assertion.setName(name);
+        assertion.setEnabled(true);
         switch (responseField) {
             case TEXT:
                 assertion.setTestFieldResponseData();

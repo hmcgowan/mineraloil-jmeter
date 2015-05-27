@@ -3,12 +3,11 @@ package com.lithium.mineraloil.jmeter.test_elements;
 import lombok.Getter;
 import lombok.experimental.Builder;
 import org.apache.jmeter.config.Arguments;
+import org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
 import org.apache.jmeter.protocol.http.util.HTTPArgument;
 import org.apache.jmeter.testelement.TestElement;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +18,7 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
     private int port;
     private String path;
     private String method;
-    private List<HTTPArgument> arguments = new ArrayList<>();
+    private Optional<List<HTTPArgument>> arguments;
     private Optional<Integer> connectTimeout;
     private Optional<Integer> responseTimeout;
     private Optional<Boolean> followRedirects;
@@ -30,14 +29,15 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
     private Optional<Boolean> doMultiPartPost;
     private Optional<Boolean> monitor;
     private Optional<String> embeddedUrlRE;
+    private Optional<String> implementation;
 
     public TestElement getTestElement() {
         HTTPSamplerProxy httpSampler = new HTTPSamplerProxy();
-        httpSampler.setProperty(TestElement.GUI_CLASS, "org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui");
-        httpSampler.setProperty(TestElement.TEST_CLASS, "org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy");
-        httpSampler.setProperty(TestElement.ENABLED, true);
-        httpSampler.setImplementation("HttpClient4");
+        httpSampler.setProperty(TestElement.GUI_CLASS, HttpTestSampleGui.class.getName());
+        httpSampler.setProperty(TestElement.TEST_CLASS, HTTPSamplerProxy.class.getName());
         httpSampler.setName(getPath().replaceAll("\\?.*", "") + " " + method + " " + String.valueOf(isReportable).toUpperCase()); // user the path without arguments
+        httpSampler.setEnabled(true);
+        httpSampler.setImplementation(implementation.orElse("HttpClient4"));
         httpSampler.setDomain(domain);
         httpSampler.setPort(port);
         httpSampler.setPath(path);
@@ -54,18 +54,17 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
         httpSampler.setDoMultipartPost(doMultiPartPost.orElse(false));
         httpSampler.setMonitor(monitor.orElse(false));
         httpSampler.setEmbeddedUrlRE(embeddedUrlRE.orElse(""));
-        if (arguments.size() > 0) httpSampler.setArguments(getArgumentsElement(arguments.get()));
-
+        if (arguments.isPresent()) httpSampler.setArguments(getArgumentsElement(arguments));
         return httpSampler;
     }
 
-    private Arguments getArgumentsElement(@Nullable List<HTTPArgument> httpArguments) {
+    private Arguments getArgumentsElement(Optional<List<HTTPArgument>> httpArguments) {
         Arguments arguments = new Arguments();
         arguments.setProperty(TestElement.GUI_CLASS, "org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel");
         arguments.setProperty(TestElement.TEST_CLASS, "org.apache.jmeter.config.Arguments");
         arguments.setProperty(TestElement.ENABLED, true);
         if (httpArguments != null) {
-            for (HTTPArgument httpArgument : httpArguments) {
+            for (HTTPArgument httpArgument : httpArguments.get()) {
                 arguments.addArgument(httpArgument);
             }
         }
@@ -82,7 +81,7 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
                                                    .value(value)
                                                    .build()
                                                    .getTestElement();
-        arguments.add(argument);
+        arguments.get().add(argument);
         return this;
     }
 }

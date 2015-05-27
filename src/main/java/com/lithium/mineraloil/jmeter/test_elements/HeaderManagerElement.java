@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.experimental.Builder;
 import org.apache.jmeter.protocol.http.control.Header;
 import org.apache.jmeter.protocol.http.control.HeaderManager;
+import org.apache.jmeter.protocol.http.gui.HeaderPanel;
 import org.apache.jmeter.testelement.TestElement;
 
 import java.util.ArrayList;
@@ -12,19 +13,16 @@ import java.util.List;
 @Builder
 @Getter
 public class HeaderManagerElement extends JMeterStepImpl<HeaderManagerElement>{
-
     private String name;
     private List<Header> headers;
 
     public TestElement getTestElement() {
         HeaderManager headerManager = new HeaderManager();
-        headerManager.setProperty(TestElement.GUI_CLASS, "org.apache.jmeter.protocol.http.gui.HeaderPanel" );
-        headerManager.setProperty(TestElement.TEST_CLASS, "org.apache.jmeter.protocol.http.control.HeaderManager");
-        headerManager.setProperty(TestElement.NAME, "HTTP Header Manager");
-        headerManager.setProperty(TestElement.ENABLED, true);
-        for (Header header : headers) {
-            headerManager.add(header);
-        }
+        headerManager.setProperty(TestElement.GUI_CLASS, HeaderPanel.class.getName());
+        headerManager.setProperty(TestElement.TEST_CLASS, HeaderManager.class.getName());
+        headerManager.setName("HTTP Header Manager");
+        headerManager.setEnabled(true);
+        for (Header header : headers) headerManager.add(header);
         return headerManager;
     }
 

@@ -1,64 +1,42 @@
 package com.lithium.mineraloil.jmeter.test_elements;
 
-import drivers.selenium_drivers.DriverManager;
 import lombok.experimental.Builder;
-import lsw.config.ConfigurationLoader;
-import org.apache.jmeter.control.LoopController;
-import org.apache.jmeter.control.gui.LoopControlPanel;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.threads.ThreadGroup;
 import org.apache.jmeter.threads.gui.ThreadGroupGui;
 
+import java.util.Optional;
+
 @Builder
 public class ThreadGroupElement extends JMeterStepImpl<ThreadGroupElement> {
-
-    private final ConfigurationLoader config = DriverManager.getConfiguration();
-
     private String name;
-    private int userCount;
-    private int rampUp;
-    private int loopCount;
-
+    private Optional<Integer> threadCount;
+    private Optional<Integer> rampUp;
+    private Optional<Integer> delay;
+    private Optional<Integer> duration;
+    private Optional<Boolean> setScheduler;
+    private Optional<Integer> loopCount;
+    private Optional<Boolean> continueForever;
+    private Optional<Boolean> isFirst;
 
     public TestElement getTestElement() {
         ThreadGroup threadGroup = new ThreadGroup();
         threadGroup.setProperty(TestElement.TEST_CLASS, ThreadGroup.class.getName());
         threadGroup.setProperty(TestElement.GUI_CLASS, ThreadGroupGui.class.getName());
-        threadGroup.setProperty(TestElement.ENABLED, true);
-        threadGroup.setProperty(TestElement.NAME, name);
+        threadGroup.setName(name);
+        threadGroup.setEnabled(true);
         threadGroup.setScheduler(false);
-        threadGroup.setDelay(0);
-        threadGroup.setDuration(0);
-        if (userCount == 0) {
-            userCount = config.getJMeterUserCount();
-        }
-        threadGroup.setNumThreads(userCount);
-
-        if (rampUp == 0) {
-            rampUp = config.getJMeterRampUp();
-        }
-        threadGroup.setRampUp(rampUp);
-
-        if (loopCount == 0) {
-            loopCount = config.getJMeterLoopCount();
-        }
-        threadGroup.setSamplerController(getLoopController(loopCount));
-
-        threadGroup.setScheduler(false);
-        threadGroup.setDelay(0);
-        threadGroup.setDuration(0);
+        threadGroup.setNumThreads(threadCount.orElse(1));
+        threadGroup.setRampUp(rampUp.orElse(0));
+        threadGroup.setDelay(delay.orElse(0));
+        threadGroup.setDuration(duration.orElse(0));
+        threadGroup.setScheduler(setScheduler.orElse(false));
+        LoopElement loopController = LoopElement.builder()
+                                                .loopCount(loopCount)
+                                                .continueForever(continueForever)
+                                                .isFirst(isFirst)
+                                                .build();
+        threadGroup.setSamplerController(loopController.getLoopController());
         return threadGroup;
-    }
-
-    private LoopController getLoopController(int loopCount) {
-        LoopController loopController = new LoopController();
-        loopController.setLoops(loopCount);
-        loopController.setContinueForever(false);
-        loopController.setFirst(true);
-        loopController.setProperty(TestElement.TEST_CLASS, LoopController.class.getName());
-        loopController.setProperty(TestElement.GUI_CLASS, LoopControlPanel.class.getName());
-        loopController.setProperty(TestElement.ENABLED, true);
-        loopController.initialize();
-        return loopController;
     }
 }

@@ -1,6 +1,7 @@
 package com.lithium.mineraloil.jmeter.test_elements;
 
 import com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor;
+import com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui;
 import lombok.experimental.Builder;
 import org.apache.jmeter.testelement.TestElement;
 
@@ -16,10 +17,10 @@ public class JSONPathExtractorElement extends JMeterStepImpl<JSONPathExtractorEl
 
     public TestElement getTestElement() {
         JSONPathExtractor jsonPathExtractor = new JSONPathExtractor();
-        jsonPathExtractor.setProperty(TestElement.GUI_CLASS, "com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui");
-        jsonPathExtractor.setProperty(TestElement.TEST_CLASS, "com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor");
-        jsonPathExtractor.setProperty(TestElement.NAME, name);
-        jsonPathExtractor.setProperty(TestElement.ENABLED, true);
+        jsonPathExtractor.setProperty(TestElement.GUI_CLASS, JSONPathExtractorGui.class.getName());
+        jsonPathExtractor.setProperty(TestElement.TEST_CLASS, JSONPathExtractor.class.getName());
+        jsonPathExtractor.setName(name);
+        jsonPathExtractor.setEnabled(true);
         jsonPathExtractor.setVar(toVariable);
         jsonPathExtractor.setJsonPath(jsonPath);
         jsonPathExtractor.setDefaultValue(defaultValue);
