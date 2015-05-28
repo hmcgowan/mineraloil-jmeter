@@ -1,10 +1,8 @@
 package com.lithium.mineraloil.jmeter.reports;
 
-import jmeter.reports.models.HTTPSample;
-import jmeter.reports.models.TestResult;
+import com.lithium.mineraloil.jmeter.reports.models.HTTPSample;
+import com.lithium.mineraloil.jmeter.reports.models.TestResult;
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -13,7 +11,6 @@ import javax.xml.bind.Unmarshaller;
 import java.io.FileInputStream;
 
 public class SummaryReport {
-    private final Logger logger = LoggerFactory.getLogger(SummaryReport.class);
     @Getter
     private TestResult testResult;
     private JAXBContext jaxbContext;

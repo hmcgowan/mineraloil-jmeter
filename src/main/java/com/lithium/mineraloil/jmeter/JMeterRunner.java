@@ -1,14 +1,8 @@
 package com.lithium.mineraloil.jmeter;
 
-import com.lithium.dog.event.AlertType;
-import drivers.selenium_drivers.DriverManager;
-import integrations.datadog.DataDogEvent;
-import integrations.datadog.DataDogStatsDEventType;
-import jmeter.reports.JTLReport;
-import jmeter.reports.SummaryReport;
-import jmeter.test_elements.JMeterStep;
-import lsw.config.ConfigurationLoader;
-import lsw.helpers.UUIDGenerator;
+import com.lithium.mineraloil.jmeter.reports.JTLReport;
+import com.lithium.mineraloil.jmeter.reports.SummaryReport;
+import com.lithium.mineraloil.jmeter.test_elements.JMeterStep;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.control.gui.TestPlanGui;
 import org.apache.jmeter.engine.StandardJMeterEngine;
@@ -28,28 +22,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class JMeterRunner {
     protected final Logger logger = LoggerFactory.getLogger(JMeterRunner.class);
-
     public CookieManager cookieManager;
     protected String jmeterBinDir;
     protected File jmeterProperties;
     protected StandardJMeterEngine jmeter;
-    protected final ConfigurationLoader config = DriverManager.getConfiguration();
-
     protected ListedHashTree testPlanTree;
-
-    public String testPlanName = "Test Plan (default name)";
     private TestPlan testPlan;
     private SummaryReport summaryResults;
     private ArrayList<JMeterStep> steps;
+    public String testPlanName = "Test Plan (default name)";
 
     public JMeterRunner() {
         jmeter = new StandardJMeterEngine();
-        jmeterBinDir = ConfigurationLoader.class.getClassLoader().getResource("jmeter").getPath();
+        jmeterBinDir = JMeterRunner.class.getClassLoader().getResource("jmeter").getPath();
         JMeterUtils.setJMeterHome(jmeterBinDir.toString());
         readProperties();
         JMeterUtils.initLocale();
@@ -236,20 +224,6 @@ public class JMeterRunner {
         return ssc;
     }
 
-    private void postTestEvent(DataDogStatsDEventType type) {
-        DataDogEvent.builder()
-                    .commonTags(new HashSet<>(Arrays.asList(DriverManager.getConfiguration().getEnvironmentTags())))
-                    .host(DriverManager.getConfiguration().getDatadogStatsDHost())
-                    .port(8125)
-                    .title("MineralOilPerformanceTest")
-                    .description(String.format("%s - %s", type, testPlanName))
-                    .descriptionArgs(new String[]{config.getBaseUrl()})
-                    .aggregator(UUIDGenerator.getUUID())
-                    .alertType(AlertType.info)
-                    .eventType(type)
-                    .build()
-                    .postEvent();
-    }
 
     public void run() {
         getCookieManager();
@@ -258,9 +232,7 @@ public class JMeterRunner {
         addSummaryReport();
         jmeter.configure(testPlanTree);
         createJMX();
-        postTestEvent(DataDogStatsDEventType.PERF_TEST_START_MARKER);
         jmeter.run();
-        postTestEvent(DataDogStatsDEventType.PERF_TEST_FINISH_MARKER);
         createReportableJtl();
         jmeter.exit();
     }

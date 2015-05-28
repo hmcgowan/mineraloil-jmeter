@@ -32,4 +32,16 @@ public abstract class JMeterStepImpl<T extends JMeterStep> implements JMeterStep
     @Override
     public abstract <T extends TestElement> T getTestElement();
 
+    protected String getOptionalValue(String value, String defaultValue) {
+        return value != null ? value : defaultValue;
+    }
+
+    protected Integer getOptionalValue(Integer value, int defaultValue) {
+        return value != null ? value : defaultValue;
+    }
+
+    protected Boolean getOptionalValue(Boolean value, Boolean defaultValue) {
+        return value != null ? value : defaultValue;
+    }
+
 }

@@ -1,6 +1,6 @@
 package com.lithium.mineraloil.jmeter.reports;
 
-import jmeter.reports.models.TestResult;
+import com.lithium.mineraloil.jmeter.reports.models.TestResult;
 import lombok.Getter;
 
 import javax.xml.bind.JAXBContext;

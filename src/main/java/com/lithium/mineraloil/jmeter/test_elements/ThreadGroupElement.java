@@ -5,19 +5,17 @@ import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.threads.ThreadGroup;
 import org.apache.jmeter.threads.gui.ThreadGroupGui;
 
-import java.util.Optional;
-
 @Builder
 public class ThreadGroupElement extends JMeterStepImpl<ThreadGroupElement> {
     private String name;
-    private Optional<Integer> threadCount;
-    private Optional<Integer> rampUp;
-    private Optional<Integer> delay;
-    private Optional<Integer> duration;
-    private Optional<Boolean> setScheduler;
-    private Optional<Integer> loopCount;
-    private Optional<Boolean> continueForever;
-    private Optional<Boolean> isFirst;
+    private Integer threadCount;
+    private Integer rampUp;
+    private Integer delay;
+    private Integer duration;
+    private Boolean setScheduler;
+    private Integer loopCount;
+    private Boolean continueForever;
+    private Boolean isFirst;
 
     public TestElement getTestElement() {
         ThreadGroup threadGroup = new ThreadGroup();
@@ -26,11 +24,11 @@ public class ThreadGroupElement extends JMeterStepImpl<ThreadGroupElement> {
         threadGroup.setName(name);
         threadGroup.setEnabled(true);
         threadGroup.setScheduler(false);
-        threadGroup.setNumThreads(threadCount.orElse(1));
-        threadGroup.setRampUp(rampUp.orElse(0));
-        threadGroup.setDelay(delay.orElse(0));
-        threadGroup.setDuration(duration.orElse(0));
-        threadGroup.setScheduler(setScheduler.orElse(false));
+        threadGroup.setNumThreads(getOptionalValue(threadCount, 1));
+        threadGroup.setRampUp(getOptionalValue(rampUp, 0));
+        threadGroup.setDelay(getOptionalValue(delay, 0));
+        threadGroup.setDuration(getOptionalValue(duration, 0));
+        threadGroup.setScheduler(getOptionalValue(setScheduler, false));
         LoopElement loopController = LoopElement.builder()
                                                 .loopCount(loopCount)
                                                 .continueForever(continueForever)

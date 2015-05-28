@@ -8,7 +8,6 @@ import org.apache.jmeter.testelement.TestElement;
 @Builder
 public class CSVDataSetElement extends JMeterStepImpl<CSVDataSetElement> {
     private String name;
-    private String fileName;
     private String fileEncoding;
     private String variableNames;
     private String delimiter;
@@ -16,6 +15,7 @@ public class CSVDataSetElement extends JMeterStepImpl<CSVDataSetElement> {
     private Boolean recycle;
     private Boolean stopThread;
     private String shareMode;
+    private String fileName;
 
     public TestElement getTestElement() {
         CSVDataSet csvDataSet = new CSVDataSet();
@@ -23,7 +23,7 @@ public class CSVDataSetElement extends JMeterStepImpl<CSVDataSetElement> {
         csvDataSet.setProperty(TestElement.TEST_CLASS, CSVDataSet.class.getName());
         csvDataSet.setName(name);
         csvDataSet.setEnabled(true);
-        csvDataSet.setFilename(String.format("%s%s", outputFilePath, fileName.toString()));
+        csvDataSet.setFilename(getOptionalValue(fileName, String.format("%s%s", outputFilePath, fileName.toString())));
         csvDataSet.setFileEncoding(fileEncoding);
         csvDataSet.setVariableNames(variableNames);
         csvDataSet.setDelimiter(delimiter);

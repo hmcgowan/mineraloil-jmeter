@@ -8,8 +8,8 @@ import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
 import org.apache.jmeter.protocol.http.util.HTTPArgument;
 import org.apache.jmeter.testelement.TestElement;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Builder
 @Getter
@@ -18,53 +18,53 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
     private int port;
     private String path;
     private String method;
-    private Optional<List<HTTPArgument>> arguments;
-    private Optional<Integer> connectTimeout;
-    private Optional<Integer> responseTimeout;
-    private Optional<Boolean> followRedirects;
-    private Optional<String> protocol;
-    private Optional<String> contentEncoding;
-    private Optional<Boolean> autoRedirects;
-    private Optional<Boolean> useKeepAlive;
-    private Optional<Boolean> doMultiPartPost;
-    private Optional<Boolean> monitor;
-    private Optional<String> embeddedUrlRE;
-    private Optional<String> implementation;
+    private List<HTTPArgument> arguments;
+    private Integer connectTimeout;
+    private Integer responseTimeout;
+    private Boolean followRedirects;
+    private String protocol;
+    private String contentEncoding;
+    private Boolean autoRedirects;
+    private Boolean useKeepAlive;
+    private Boolean doMultiPartPost;
+    private Boolean monitor;
+    private String embeddedUrlRE;
+    private String implementation;
 
     public TestElement getTestElement() {
         HTTPSamplerProxy httpSampler = new HTTPSamplerProxy();
-        httpSampler.setProperty(TestElement.GUI_CLASS, HttpTestSampleGui.class.getName());
-        httpSampler.setProperty(TestElement.TEST_CLASS, HTTPSamplerProxy.class.getName());
+        httpSampler.setProperty(TestElement.GUI_CLASS, HttpTestSampleGui.class.getName().toString());
+        httpSampler.setProperty(TestElement.TEST_CLASS, HTTPSamplerProxy.class.getName().toString());
         httpSampler.setName(getPath().replaceAll("\\?.*", "") + " " + method + " " + String.valueOf(isReportable).toUpperCase()); // user the path without arguments
         httpSampler.setEnabled(true);
-        httpSampler.setImplementation(implementation.orElse("HttpClient4"));
         httpSampler.setDomain(domain);
         httpSampler.setPort(port);
         httpSampler.setPath(path);
         httpSampler.setMethod(method);
 
         // optional parameters
-        httpSampler.setConnectTimeout(String.valueOf(connectTimeout.orElse(120000)));
-        httpSampler.setResponseTimeout(String.valueOf(responseTimeout.orElse(120000)));
-        httpSampler.setFollowRedirects(followRedirects.orElse(false));
-        httpSampler.setProtocol(protocol.orElse("HTTPS"));
-        httpSampler.setContentEncoding(contentEncoding.orElse("UTF-8"));
-        httpSampler.setAutoRedirects(autoRedirects.orElse(true));
-        httpSampler.setUseKeepAlive(useKeepAlive.orElse(true));
-        httpSampler.setDoMultipartPost(doMultiPartPost.orElse(false));
-        httpSampler.setMonitor(monitor.orElse(false));
-        httpSampler.setEmbeddedUrlRE(embeddedUrlRE.orElse(""));
-        if (arguments.isPresent()) httpSampler.setArguments(getArgumentsElement(arguments));
+        httpSampler.setImplementation(getOptionalValue(implementation, "HttpClient4"));
+        httpSampler.setConnectTimeout(String.valueOf(getOptionalValue(connectTimeout, 120000)));
+        httpSampler.setResponseTimeout(String.valueOf(getOptionalValue(responseTimeout, 120000)));
+        httpSampler.setFollowRedirects(getOptionalValue(followRedirects, false));
+        httpSampler.setProtocol(getOptionalValue(protocol, "HTTPS"));
+        httpSampler.setContentEncoding(getOptionalValue(contentEncoding, "UTF-8"));
+        httpSampler.setAutoRedirects(getOptionalValue(autoRedirects, true));
+        httpSampler.setUseKeepAlive(getOptionalValue(useKeepAlive, true));
+        httpSampler.setDoMultipartPost(getOptionalValue(doMultiPartPost, false));
+        httpSampler.setMonitor(getOptionalValue(monitor, false));
+        httpSampler.setEmbeddedUrlRE(getOptionalValue(embeddedUrlRE,""));
+        if (arguments!= null) httpSampler.setArguments(getArgumentsElement(arguments));
         return httpSampler;
     }
 
-    private Arguments getArgumentsElement(Optional<List<HTTPArgument>> httpArguments) {
+    private Arguments getArgumentsElement(List<HTTPArgument> httpArguments) {
         Arguments arguments = new Arguments();
         arguments.setProperty(TestElement.GUI_CLASS, "org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel");
         arguments.setProperty(TestElement.TEST_CLASS, "org.apache.jmeter.config.Arguments");
         arguments.setProperty(TestElement.ENABLED, true);
         if (httpArguments != null) {
-            for (HTTPArgument httpArgument : httpArguments.get()) {
+            for (HTTPArgument httpArgument : httpArguments) {
                 arguments.addArgument(httpArgument);
             }
         }
@@ -76,12 +76,13 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
     }
 
     public HTTPSamplerElement addArgument(String name, String value) {
+        if (arguments == null) arguments = new ArrayList<>();
         HTTPArgument argument = (HTTPArgument) HTTPArgumentElement.builder()
-                                                   .name(name)
-                                                   .value(value)
-                                                   .build()
-                                                   .getTestElement();
-        arguments.get().add(argument);
+                                                                  .name(name)
+                                                                  .value(value)
+                                                                  .build()
+                                                                  .getTestElement();
+        arguments.add(argument);
         return this;
     }
 }
