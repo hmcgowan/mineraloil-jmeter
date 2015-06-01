@@ -26,6 +26,7 @@ import java.util.Observable;
 
 public class JMeterRunner extends Observable {
     protected final Logger logger = LoggerFactory.getLogger(JMeterRunner.class);
+    private final String testPlanName;
     public CookieManager cookieManager;
     protected String jmeterBinDir;
     protected File jmeterProperties;
@@ -34,16 +35,15 @@ public class JMeterRunner extends Observable {
     private TestPlan testPlan;
     private SummaryReport summaryResults;
     private ArrayList<JMeterStep> steps;
-    public String testPlanName = "Test Plan (default name)";
 
-    public JMeterRunner() {
+    public JMeterRunner(String testPlanName) {
         jmeter = new StandardJMeterEngine();
         jmeterBinDir = JMeterRunner.class.getClassLoader().getResource("jmeter").getPath();
         JMeterUtils.setJMeterHome(jmeterBinDir.toString());
         readProperties();
         JMeterUtils.initLocale();
         testPlanTree = new ListedHashTree();
-        this.testPlanName = getTestPlanName();
+        this.testPlanName = testPlanName;
         createTestPlan();
     }
 
@@ -75,10 +75,6 @@ public class JMeterRunner extends Observable {
         testPlan.setUserDefinedVariables(arguments);
         testPlan.setTestPlanClasspath("");
         return testPlan;
-    }
-
-    public String getTestPlanName() {
-        return Thread.currentThread().getStackTrace()[3].getMethodName().toLowerCase();
     }
 
     private void addTestSteps() {

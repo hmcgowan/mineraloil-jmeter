@@ -20,7 +20,7 @@ public class HTTPStep {
                                                      .path("/")
                                                      .method("GET")
                                                      .build();
-        JMeterRunner jmeter = new JMeterRunner();
+        JMeterRunner jmeter = new JMeterRunner("httpRequest");
         ThreadGroupElement threadGroup = ThreadGroupElement.builder()
                                                            .loopCount(2)
                                                            .name("Show Active Users Test").build();
