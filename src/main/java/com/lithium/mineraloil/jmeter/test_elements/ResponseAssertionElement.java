@@ -1,5 +1,6 @@
 package com.lithium.mineraloil.jmeter.test_elements;
 
+import com.google.common.base.Preconditions;
 import lombok.experimental.Builder;
 import org.apache.jmeter.assertions.ResponseAssertion;
 import org.apache.jmeter.assertions.gui.AssertionGui;
@@ -16,6 +17,9 @@ public class ResponseAssertionElement extends JMeterStepImpl<ResponseAssertionEl
     private String name;
 
     public TestElement getTestElement() {
+        Preconditions.checkNotNull(name);
+        Preconditions.checkNotNull(testString);
+
         ResponseAssertion assertion = new ResponseAssertion();
         assertion.setProperty(TestElement.GUI_CLASS, AssertionGui.class.getName());
         assertion.setProperty(TestElement.TEST_CLASS, ResponseAssertion.class.getName());

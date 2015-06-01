@@ -1,7 +1,8 @@
 package com.lithium.mineraloil.jmeter.test_elements;
 
+import com.google.common.base.Preconditions;
 import lombok.experimental.Builder;
-import org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui;
+import org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
 import org.apache.jmeter.protocol.http.util.HTTPArgument;
 import org.apache.jmeter.testelement.TestElement;
@@ -15,8 +16,11 @@ public class HTTPArgumentElement extends JMeterStepImpl<HTTPArgumentElement> {
     private Boolean setAlwaysEncoded;
 
     public TestElement getTestElement() {
+        Preconditions.checkNotNull(name);
+        Preconditions.checkNotNull(value);
+
         HTTPArgument httpArgument = new HTTPArgument();
-        httpArgument.setProperty(TestElement.GUI_CLASS, HttpTestSampleGui.class.getName().toString());
+        httpArgument.setProperty(TestElement.GUI_CLASS, HTTPArgumentsPanel.class.getName().toString());
         httpArgument.setProperty(TestElement.TEST_CLASS, HTTPSamplerProxy.class.getName().toString());
         httpArgument.setName(name);
         httpArgument.setValue(value);
