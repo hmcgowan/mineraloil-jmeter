@@ -23,14 +23,17 @@ public class CSVDataSetElement extends JMeterStepImpl<CSVDataSetElement> {
         csvDataSet.setProperty(TestElement.TEST_CLASS, CSVDataSet.class.getName());
         csvDataSet.setName(name);
         csvDataSet.setEnabled(true);
-        csvDataSet.setFilename(getOptionalValue(fileName, String.format("%s%s", outputFilePath, fileName.toString())));
-        csvDataSet.setFileEncoding(fileEncoding);
-        csvDataSet.setVariableNames(variableNames);
-        csvDataSet.setDelimiter(delimiter);
-        csvDataSet.setQuotedData(quotedData);
-        csvDataSet.setRecycle(recycle);
-        csvDataSet.setStopThread(stopThread);
-        csvDataSet.setShareMode(shareMode);
+
+        // calling the setters doesn't work in jmeter 2.11
+        csvDataSet.setProperty("filename", getOptionalValue(fileName, String.format("%s%s", outputFilePath, fileName.toString())));
+        csvDataSet.setProperty("fileEncoding", fileEncoding);
+        csvDataSet.setProperty("variableNames", variableNames);
+        csvDataSet.setProperty("delimiter",delimiter);
+        csvDataSet.setProperty("quotedData", quotedData);
+        csvDataSet.setProperty("recycle", recycle);
+        csvDataSet.setProperty("stopThread", stopThread);
+        csvDataSet.setProperty("shareMode", shareMode);
+
         return csvDataSet;
     }
 }

@@ -19,8 +19,11 @@ public class ConstantThroughputTimerElement extends JMeterStepImpl<ConstantThrou
         timer.setName("Constant Throughput Timer");
         timer.setComment("Used to throttle the amount of activity in any given minute to simulate real user loads");
         timer.setEnabled(true);
-        timer.setThroughput(throughput);
-        timer.setCalcMode(calcMode.getIndex());
+
+        // calling the setters doesn't work in jmeter 2.11
+        timer.setProperty("throughput", throughput);
+        timer.setProperty("calcMode", calcMode.getIndex());
+
         return timer;
     }
 
