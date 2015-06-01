@@ -27,6 +27,7 @@ import java.util.Observable;
 public class JMeterRunner extends Observable {
     protected final Logger logger = LoggerFactory.getLogger(JMeterRunner.class);
     private final String testPlanName;
+    private final String testPlanFileName;
     public CookieManager cookieManager;
     protected String jmeterBinDir;
     protected File jmeterProperties;
@@ -44,6 +45,7 @@ public class JMeterRunner extends Observable {
         JMeterUtils.initLocale();
         testPlanTree = new ListedHashTree();
         this.testPlanName = testPlanName;
+        this.testPlanFileName = testPlanName.toLowerCase().replaceAll("\\s+", "-");
         createTestPlan();
     }
 
@@ -80,7 +82,7 @@ public class JMeterRunner extends Observable {
     private void addTestSteps() {
 
         for (JMeterStep step : steps) {
-            step.setOutputFilePath(String.format("%s/%s-", JMeterRunner.getOutputDirectory(), testPlanName));
+            step.setOutputFilePath(String.format("%s/%s-", JMeterRunner.getOutputDirectory(), testPlanFileName));
             HashTree childHashTree = testPlanTree.add(testPlan, (Object) step.getTestElement());
             if (step.getSteps().size() > 0) addChildTestElements(childHashTree, step);
         }
@@ -90,7 +92,7 @@ public class JMeterRunner extends Observable {
     private void addChildTestElements(HashTree hashTree, JMeterStep currentStep) {
         logger.info(String.format("Adding child steps for %s", currentStep.getTestElement().getName()));
         for (JMeterStep childStep : currentStep.getSteps()) {
-            childStep.setOutputFilePath(String.format("%s/%s-", JMeterRunner.getOutputDirectory(), testPlanName));
+            childStep.setOutputFilePath(String.format("%s/%s-", JMeterRunner.getOutputDirectory(), testPlanFileName));
             HashTree childHashTree = hashTree.add((Object) childStep.getTestElement());
             if (childStep.getSteps().size() > 0) addChildTestElements(childHashTree, childStep);
         }
@@ -187,11 +189,11 @@ public class JMeterRunner extends Observable {
     }
 
     public String getFileName(String name, String extension) {
-        return String.format("%s/%s-%s.%s", JMeterRunner.getOutputDirectory(), testPlanName, name, extension);
+        return String.format("%s/%s-%s.%s", JMeterRunner.getOutputDirectory(), testPlanFileName, name, extension);
     }
 
     public String getFileName(String extension) {
-        return String.format("%s/%s.%s", JMeterRunner.getOutputDirectory(), testPlanName, extension);
+        return String.format("%s/%s.%s", JMeterRunner.getOutputDirectory(), testPlanFileName, extension);
     }
 
     private SampleSaveConfiguration getSampleSaveConfiguration() {
