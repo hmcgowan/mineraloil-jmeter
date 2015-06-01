@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.experimental.Builder;
 import org.apache.jmeter.config.Arguments;
+import org.apache.jmeter.config.gui.ArgumentsPanel;
 import org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
 import org.apache.jmeter.protocol.http.util.HTTPArgument;
@@ -59,14 +60,14 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
         httpSampler.setDoMultipartPost(getOptionalValue(doMultiPartPost, false));
         httpSampler.setMonitor(getOptionalValue(monitor, false));
         httpSampler.setEmbeddedUrlRE(getOptionalValue(embeddedUrlRE,""));
-        if (arguments!= null) httpSampler.setArguments(getArgumentsElement(arguments));
+        httpSampler.setArguments(getArgumentsElement(arguments));
         return httpSampler;
     }
 
     private Arguments getArgumentsElement(List<HTTPArgument> httpArguments) {
         Arguments arguments = new Arguments();
-        arguments.setProperty(TestElement.GUI_CLASS, "org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel");
-        arguments.setProperty(TestElement.TEST_CLASS, "org.apache.jmeter.config.Arguments");
+        arguments.setProperty(TestElement.GUI_CLASS, ArgumentsPanel.class.getName());
+        arguments.setProperty(TestElement.TEST_CLASS, Arguments.class.getName());
         arguments.setProperty(TestElement.ENABLED, true);
         if (httpArguments != null) {
             for (HTTPArgument httpArgument : httpArguments) {
