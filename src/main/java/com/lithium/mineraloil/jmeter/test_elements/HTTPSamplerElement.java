@@ -1,5 +1,6 @@
 package com.lithium.mineraloil.jmeter.test_elements;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.experimental.Builder;
 import org.apache.jmeter.config.Arguments;
@@ -32,6 +33,10 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
     private String implementation;
 
     public TestElement getTestElement() {
+        Preconditions.checkNotNull(domain);
+        Preconditions.checkNotNull(port);
+        Preconditions.checkNotNull(path);
+
         HTTPSamplerProxy httpSampler = new HTTPSamplerProxy();
         httpSampler.setProperty(TestElement.GUI_CLASS, HttpTestSampleGui.class.getName().toString());
         httpSampler.setProperty(TestElement.TEST_CLASS, HTTPSamplerProxy.class.getName().toString());
@@ -40,7 +45,7 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
         httpSampler.setDomain(domain);
         httpSampler.setPort(port);
         httpSampler.setPath(path);
-        httpSampler.setMethod(method);
+        httpSampler.setMethod(getOptionalValue(method, "GET"));
 
         // optional parameters
         httpSampler.setImplementation(getOptionalValue(implementation, "HttpClient4"));

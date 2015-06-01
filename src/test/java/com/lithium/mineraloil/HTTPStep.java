@@ -14,7 +14,7 @@ public class HTTPStep {
         // There's no verification here but you can see the output in the console for the server to get a few requests
 
         HTTPSamplerElement login = HTTPSamplerElement.builder()
-                                                     .domain("localhost")
+                                                     .domain("0.0.0.0")
                                                      .port(8000)
                                                      .protocol("http")
                                                      .path("/")

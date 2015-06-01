@@ -1,5 +1,6 @@
 package com.lithium.mineraloil.jmeter.test_elements;
 
+import com.google.common.base.Preconditions;
 import lombok.experimental.Builder;
 import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.control.gui.LoopControlPanel;
@@ -20,11 +21,12 @@ public class LoopElement extends JMeterStepImpl<LoopElement> {
 
     // for cases where it's pulled in to a ThreadGroupElement
     public LoopController getLoopController() {
+        Preconditions.checkNotNull(name);
         LoopController loopController = new LoopController();
-        loopController.setProperty(TestElement.TEST_CLASS, LoopController.class.getName());
         loopController.setProperty(TestElement.GUI_CLASS, LoopControlPanel.class.getName());
-        loopController.setName(name);
-        loopController.setEnabled(true);
+        loopController.setProperty(TestElement.TEST_CLASS, LoopController.class.getName());
+        loopController.setProperty(TestElement.NAME, name);
+        loopController.setProperty(TestElement.ENABLED, true);
         loopController.setLoops(getOptionalValue(loopCount, 1));
         loopController.setContinueForever(getOptionalValue(continueForever, false));
         loopController.setFirst(getOptionalValue(isFirst, true));
