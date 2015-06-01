@@ -22,8 +22,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Observable;
 
-public class JMeterRunner {
+public class JMeterRunner extends Observable {
     protected final Logger logger = LoggerFactory.getLogger(JMeterRunner.class);
     public CookieManager cookieManager;
     protected String jmeterBinDir;
@@ -224,7 +225,6 @@ public class JMeterRunner {
         return ssc;
     }
 
-
     public void run() {
         getCookieManager();
         addTestSteps();
@@ -232,7 +232,11 @@ public class JMeterRunner {
         addSummaryReport();
         jmeter.configure(testPlanTree);
         createJMX();
+        setChanged();
+        notifyObservers("started " + testPlanName);
         jmeter.run();
+        setChanged();
+        notifyObservers("stopped " + testPlanName);
         createReportableJtl();
         jmeter.exit();
     }

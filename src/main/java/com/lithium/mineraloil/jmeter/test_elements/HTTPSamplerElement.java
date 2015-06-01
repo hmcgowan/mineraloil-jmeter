@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.experimental.Builder;
 import org.apache.jmeter.config.Arguments;
-import org.apache.jmeter.config.gui.ArgumentsPanel;
 import org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui;
+import org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
 import org.apache.jmeter.protocol.http.util.HTTPArgument;
 import org.apache.jmeter.testelement.TestElement;
@@ -66,7 +66,7 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
 
     private Arguments getArgumentsElement(List<HTTPArgument> httpArguments) {
         Arguments arguments = new Arguments();
-        arguments.setProperty(TestElement.GUI_CLASS, ArgumentsPanel.class.getName());
+        arguments.setProperty(TestElement.GUI_CLASS, HTTPArgumentsPanel.class.getName());
         arguments.setProperty(TestElement.TEST_CLASS, Arguments.class.getName());
         arguments.setProperty(TestElement.ENABLED, true);
         if (httpArguments != null) {
