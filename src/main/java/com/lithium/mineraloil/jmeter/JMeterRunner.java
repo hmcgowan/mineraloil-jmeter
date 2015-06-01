@@ -29,6 +29,7 @@ public class JMeterRunner extends Observable {
     protected final Logger logger = LoggerFactory.getLogger(JMeterRunner.class);
     @Getter
     private final String testPlanName;
+    @Getter
     private final String testPlanFileName;
     public CookieManager cookieManager;
     protected String jmeterBinDir;
