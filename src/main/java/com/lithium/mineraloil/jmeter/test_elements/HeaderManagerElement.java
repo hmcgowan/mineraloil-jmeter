@@ -1,5 +1,6 @@
 package com.lithium.mineraloil.jmeter.test_elements;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.experimental.Builder;
 import org.apache.jmeter.protocol.http.control.Header;
@@ -17,6 +18,8 @@ public class HeaderManagerElement extends JMeterStepImpl<HeaderManagerElement>{
     private List<Header> headers;
 
     public TestElement getTestElement() {
+        Preconditions.checkNotNull(name);
+
         HeaderManager headerManager = new HeaderManager();
         headerManager.setProperty(TestElement.GUI_CLASS, HeaderPanel.class.getName());
         headerManager.setProperty(TestElement.TEST_CLASS, HeaderManager.class.getName());

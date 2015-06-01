@@ -30,7 +30,7 @@ public class HTTPSample {
     private String lb;
 
     @XmlAttribute
-    private int rc;
+    private String rc;
 
     @XmlAttribute
     private String tn;

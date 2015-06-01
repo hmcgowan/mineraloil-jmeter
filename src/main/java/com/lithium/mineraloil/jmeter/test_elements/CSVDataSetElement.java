@@ -1,5 +1,6 @@
 package com.lithium.mineraloil.jmeter.test_elements;
 
+import com.google.common.base.Preconditions;
 import lombok.experimental.Builder;
 import org.apache.jmeter.config.CSVDataSet;
 import org.apache.jmeter.testbeans.gui.TestBeanGUI;
@@ -18,6 +19,9 @@ public class CSVDataSetElement extends JMeterStepImpl<CSVDataSetElement> {
     private String fileName;
 
     public TestElement getTestElement() {
+        Preconditions.checkNotNull(name);
+        Preconditions.checkNotNull(fileName);
+
         CSVDataSet csvDataSet = new CSVDataSet();
         csvDataSet.setProperty(TestElement.GUI_CLASS, TestBeanGUI.class.getName());
         csvDataSet.setProperty(TestElement.TEST_CLASS, CSVDataSet.class.getName());

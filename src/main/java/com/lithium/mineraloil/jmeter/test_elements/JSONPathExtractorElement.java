@@ -2,6 +2,7 @@ package com.lithium.mineraloil.jmeter.test_elements;
 
 import com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor;
 import com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui;
+import com.google.common.base.Preconditions;
 import lombok.experimental.Builder;
 import org.apache.jmeter.testelement.TestElement;
 
@@ -16,6 +17,12 @@ public class JSONPathExtractorElement extends JMeterStepImpl<JSONPathExtractorEl
     private String subject;
 
     public TestElement getTestElement() {
+        Preconditions.checkNotNull(name);
+        Preconditions.checkNotNull(jsonPath);
+        Preconditions.checkNotNull(toVariable);
+        Preconditions.checkNotNull(defaultValue);
+        Preconditions.checkNotNull(fromVariable);
+
         JSONPathExtractor jsonPathExtractor = new JSONPathExtractor();
         jsonPathExtractor.setProperty(TestElement.GUI_CLASS, JSONPathExtractorGui.class.getName());
         jsonPathExtractor.setProperty(TestElement.TEST_CLASS, JSONPathExtractor.class.getName());

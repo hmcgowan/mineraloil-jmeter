@@ -1,5 +1,6 @@
 package com.lithium.mineraloil.jmeter.test_elements;
 
+import com.google.common.base.Preconditions;
 import lombok.experimental.Builder;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.threads.ThreadGroup;
@@ -18,6 +19,8 @@ public class ThreadGroupElement extends JMeterStepImpl<ThreadGroupElement> {
     private Boolean isFirst;
 
     public TestElement getTestElement() {
+        Preconditions.checkNotNull(name);
+
         ThreadGroup threadGroup = new ThreadGroup();
         threadGroup.setProperty(TestElement.TEST_CLASS, ThreadGroup.class.getName());
         threadGroup.setProperty(TestElement.GUI_CLASS, ThreadGroupGui.class.getName());
@@ -30,6 +33,7 @@ public class ThreadGroupElement extends JMeterStepImpl<ThreadGroupElement> {
         threadGroup.setDuration(getOptionalValue(duration, 0));
         threadGroup.setScheduler(getOptionalValue(setScheduler, false));
         LoopElement loopController = LoopElement.builder()
+                                                .name(name + "_loopController")
                                                 .loopCount(loopCount)
                                                 .continueForever(continueForever)
                                                 .isFirst(isFirst)
