@@ -23,6 +23,7 @@ public class LoopElement extends JMeterStepImpl<LoopElement> {
         LoopController loopController = new LoopController();
         loopController.setProperty(TestElement.TEST_CLASS, LoopController.class.getName());
         loopController.setProperty(TestElement.GUI_CLASS, LoopControlPanel.class.getName());
+        loopController.setName(name);
         loopController.setEnabled(true);
         loopController.setLoops(getOptionalValue(loopCount, 1));
         loopController.setContinueForever(getOptionalValue(continueForever, false));
