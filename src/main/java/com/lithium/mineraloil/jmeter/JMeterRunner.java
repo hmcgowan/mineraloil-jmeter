@@ -3,6 +3,7 @@ package com.lithium.mineraloil.jmeter;
 import com.lithium.mineraloil.jmeter.reports.JTLReport;
 import com.lithium.mineraloil.jmeter.reports.SummaryReport;
 import com.lithium.mineraloil.jmeter.test_elements.JMeterStep;
+import lombok.Getter;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.control.gui.TestPlanGui;
 import org.apache.jmeter.engine.StandardJMeterEngine;
@@ -26,6 +27,7 @@ import java.util.Observable;
 
 public class JMeterRunner extends Observable {
     protected final Logger logger = LoggerFactory.getLogger(JMeterRunner.class);
+    @Getter
     private final String testPlanName;
     private final String testPlanFileName;
     public CookieManager cookieManager;
