@@ -252,11 +252,6 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-            </resource>
-        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
