@@ -52,10 +52,13 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
         httpSampler.setImplementation(getOptionalValue(implementation, "HttpClient4"));
         httpSampler.setConnectTimeout(String.valueOf(getOptionalValue(connectTimeout, 120000)));
         httpSampler.setResponseTimeout(String.valueOf(getOptionalValue(responseTimeout, 120000)));
-        httpSampler.setFollowRedirects(getOptionalValue(followRedirects, false));
         httpSampler.setProtocol(getOptionalValue(protocol, "HTTPS"));
         httpSampler.setContentEncoding(getOptionalValue(contentEncoding, "UTF-8"));
-        httpSampler.setAutoRedirects(getOptionalValue(autoRedirects, true));
+        if (getOptionalValue(followRedirects, false)) {
+            httpSampler.setFollowRedirects(getOptionalValue(followRedirects, false));
+        } else {
+            httpSampler.setAutoRedirects(getOptionalValue(autoRedirects, true));
+        }
         httpSampler.setUseKeepAlive(getOptionalValue(useKeepAlive, true));
         httpSampler.setDoMultipartPost(getOptionalValue(doMultiPartPost, false));
         httpSampler.setMonitor(getOptionalValue(monitor, false));
