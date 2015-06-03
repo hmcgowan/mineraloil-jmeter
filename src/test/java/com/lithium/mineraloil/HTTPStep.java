@@ -26,7 +26,7 @@ public class HTTPStep {
                                                            .loopCount(2)
                                                            .name("Show Active Users Test").build();
         threadGroup.addReportableStep(login);
-        threadGroup.addStep(RegularExpressionExtractorElement.builder().referenceName("r").regex(".").build());
+        threadGroup.addStep(RegularExpressionExtractorElement.builder().name("regex").referenceName("r").regex(".").build());
         jmeter.addStep(threadGroup);
         jmeter.run();
     }
