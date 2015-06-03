@@ -2,7 +2,6 @@ package com.lithium.mineraloil;
 
 import com.lithium.mineraloil.jmeter.JMeterRunner;
 import com.lithium.mineraloil.jmeter.test_elements.HTTPSamplerElement;
-import com.lithium.mineraloil.jmeter.test_elements.RegularExpressionExtractorElement;
 import com.lithium.mineraloil.jmeter.test_elements.ThreadGroupElement;
 import org.junit.Test;
 
@@ -26,7 +25,6 @@ public class HTTPStep {
                                                            .loopCount(2)
                                                            .name("Show Active Users Test").build();
         threadGroup.addReportableStep(login);
-        threadGroup.addStep(RegularExpressionExtractorElement.builder().name("regex").referenceName("r").regex(".").build());
         jmeter.addStep(threadGroup);
         jmeter.run();
     }
