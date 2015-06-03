@@ -31,11 +31,11 @@ public class SummaryReport {
     }
 
     public boolean isFailureSeen() {
-        return testResult.getHttpSamples().stream().anyMatch(row -> row.getAssertionResult().getFailure() == true);
+        return testResult.getHttpSamples().stream().anyMatch(row -> row.getAssertionResult() != null && row.getAssertionResult().getFailure() == true);
     }
 
     public boolean isErrorSeen() {
-        return testResult.getHttpSamples().stream().anyMatch(row -> row.getAssertionResult().getError() == true);
+        return testResult.getHttpSamples().stream().anyMatch(row -> row.getAssertionResult() != null && row.getAssertionResult().getError() == true);
     }
 
     public void showOutputInLog() {
