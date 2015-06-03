@@ -27,7 +27,7 @@ public class RegularExpressionExtractorElement extends JMeterStepImpl<RegularExp
         regexExtractor.setProperty("RegexExtractor.regex", regex);
         regexExtractor.setProperty("RegexExtractor.template", template);
         regexExtractor.setProperty("RegexExtractor.match_number", matchNumber);
-        regexExtractor.setProperty("RegexExtractor.default", defaultValue);
+        regexExtractor.setProperty("RegexExtractor.default", getOptionalValue(defaultValue, ""));
         return regexExtractor;
     }
 }
