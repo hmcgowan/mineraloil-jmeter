@@ -11,18 +11,11 @@ public class UserLoginTest extends JMeterTest {
     @Test
     public void loginTest() {
         JMeterRunner jmeter = new JMeterRunner("Login");
-        jmeter.addStep(ThreadGroupSteps.createThreadGroup("Login Test")
-									                     .addReportableStep(HTTPSteps.login()));
+        jmeter.addStep(ThreadGroupSteps.createThreadGroup("Login Test")								                     .addReportableStep(HTTPSteps.login()));
         jmeter.run();
         Assert.assertTrue("Test run failed. Error rate: " + jMeter.getSummaryResults().getErrorRate(),        
                           jMeter.getSummaryResults().isSuccessful());
     }
-}
-
-public class JMeterTest {
-    public void checkJmeterForErrors(JMeterRunner jMeter) {
-		    
-	  }
 }
 
 public class HTTPSteps {
@@ -46,7 +39,6 @@ public class HTTPSteps {
                                  .addStep(AssertionSteps.isLoggedIn());
     }
 }
-
 
 public class AssertionSteps {
     public static ResponseAssertionElement isLoggedIn() {
@@ -97,10 +89,17 @@ These also directly correspond to JMeter Thread Groups and you can add steps or 
 
 JMeter tends to report everything to one output file, but for our purposes we wanted the ability to selectively decide whether we cared about a time measurement for each step in a threadgroup. So while we still provide all of the summary output, we filter that output into a secondary reportable-summary file that only contains the measured steps we care about. 
 
-'''java
+```java
 Threadgroup.addStep() // perform the step but only show in the summary file
 Threadgroup.addReportableStep() // perform the step and show in the summary and reportable-summary file. 
-'''
+```
+
+## Supported JMeter methods
+
+We've only built out what we need, but it's easy to add support for JMeter steps and we'd love to get contributions. 
+
+[Currently supported steps](https://github.com/lithiumtech/mineraloil-jmeter/tree/master/src/main/java/com/lithium/mineraloil/jmeter/test_elements)
+
 
 
 
