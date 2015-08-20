@@ -54,7 +54,11 @@ public class AssertionSteps {
 }
 ```
 
-The HTTPSteps.login() method will vary application to application as will the assertion that the user is logged in. Now that we have this set up, we can reuse the login method for other tests. If you look in the target/jmeter directory you should see the raw output files in addition to a .jmx file that you can then open and run in JMeter if you like. 
+So in this case we've created an HTTPSampler Element that is specific to (and reusable for) logging into the application.
+
+The HTTPSteps.login() method will of course vary application to application as will the assertion that the user is logged in. Now that we have this set up, we can reuse the login method for other tests. If you look in the target/jmeter directory you should see the raw output files in addition to a .jmx file that you can then open and run in JMeter if you like. 
+
+In the same manner you can imagine building out a suite of reusable steps that could add items to a cart, view cart contents, complete a purchase, etc. Once the steps are built it's trivial to combine them in the way you need to get the performance results you want. 
 
 ## Creating a script
 
