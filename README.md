@@ -6,7 +6,7 @@ JMeter is a great tool but when you build out a full performance suite you end u
 One of the benefits to this approach is being able to encapsulate and share common methods easily. This allows the scripts to be maintainable and easy to read. For example, this is a simple login test:
 
 ```java
-public class UserLoginTest extends JMeterTest {
+public class UserLoginTest {
 
     @Test
     public void loginTest() {
