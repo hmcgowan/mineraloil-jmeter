@@ -1,2 +1,107 @@
 # mineraloil-jmeter
-Run JMeter without needing the GUI
+Run JMeter without the GUI
+
+JMeter is a great tool but when you build out a full performance suite you end up having to maintain a lot of XML which is a burden and lends itself to a lot of repetition. This library allows you to call JMeter directly through Java and maintain your test code in Java, while still creating JMX files so you can debug issues in the native JMeter application. 
+
+One of the benefits to this approach is being able to encapsulate and share common methods easily. This allows the scripts to be maintainable and easy to read. For example, this is a simple login test:
+
+```java
+public class UserLoginTest extends JMeterTest {
+
+    @Test
+    public void loginTest() {
+        JMeterRunner jmeter = new JMeterRunner("Login");
+        jmeter.addStep(ThreadGroupSteps.createThreadGroup("Login Test")
+									                     .addReportableStep(HTTPSteps.login()));
+        jmeter.run();
+        Assert.assertTrue("Test run failed. Error rate: " + jMeter.getSummaryResults().getErrorRate(),        
+                          jMeter.getSummaryResults().isSuccessful());
+    }
+}
+
+public class JMeterTest {
+    public void checkJmeterForErrors(JMeterRunner jMeter) {
+		    
+	  }
+}
+
+public class HTTPSteps {
+    private static String domain = "someDomain";
+    private static int port = 80;
+    private static String protocol = "http";
+
+    public static HTTPSamplerElement login() {
+        return HTTPSamplerElement.builder()
+                                 .domain(domain)
+                                 .port(port)
+                                 .protocol(protocol)
+                                 .path("/path/to/login/form")
+                                 .useKeepAlive(true)
+                                 .followRedirects(true)
+                                 .doMultiPartPost(true)
+                                 .method("POST")
+                                 .build()
+                                 .addArgument("login", "someUsername")
+                                 .addArgument("password", "somePassword")
+                                 .addStep(AssertionSteps.isLoggedIn());
+    }
+}
+
+
+public class AssertionSteps {
+    public static ResponseAssertionElement isLoggedIn() {
+        return ResponseAssertionElement.builder()
+                                       .name("Assert user is logged in")
+                                       .responseSampleType(ResponseSampleType.MAIN_SAMPLE)
+                                       .responseField(ResponseField.TEXT)
+                                       .responsePatternType(ResponsePatternType.CONTAINS)
+                                       .not(false)
+                                       .testString("<a>Sign Out</a>")
+                                       .build();
+    }
+}
+```
+
+The HTTPSteps.login() method will vary application to application as will the assertion that the user is logged in. Now that we have this set up, we can reuse the login method for other tests. If you look in the target/jmeter directory you should see the raw output files in addition to a .jmx file that you can then open and run in JMeter if you like. 
+
+## Creating a script
+
+Like in the example above, we do three basic actions to create a script. 
+
+(1) Instantiate the JMeterRunner with a test plan name:
+
+```java
+ JMeterRunner jmeter = new JMeterRunner("Login");
+```
+(2) Add one or more steps (which can then also have nested steps)
+
+```java
+jmeter.addStep(ThreadGroupSteps.createThreadGroup("Login Test")
+                                .addReportableStep(HTTPSteps.login()));
+```
+(3) run the jmeter script
+
+```java
+jmeter.run();
+```
+
+## JMeter Steps
+
+These directly correspond to steps in the JMeter UI. You can add steps directly or add thread groups
+
+## Thread Group steps
+
+These also directly correspond to JMeter Thread Groups and you can add steps or other thread groups just as you would in the JMeter application
+
+## Steps vs. Reportable Steps 
+
+JMeter tends to report everything to one output file, but for our purposes we wanted the ability to selectively decide whether we cared about a time measurement for each step in a threadgroup. So while we still provide all of the summary output, we filter that output into a secondary reportable-summary file that only contains the measured steps we care about. 
+
+'''java
+Threadgroup.addStep() // perform the step but only show in the summary file
+Threadgroup.addReportableStep() // perform the step and show in the summary and reportable-summary file. 
+'''
+
+
+
+
