@@ -104,6 +104,16 @@ We've only built out what we need, but it's easy to add support for JMeter steps
 
 [Currently supported steps](https://github.com/lithiumtech/mineraloil-jmeter/tree/master/src/main/java/com/lithium/mineraloil/jmeter/test_elements)
 
+## Built-in assumptions
+
+We assume that you want a cookie manager to maintain a session throughout your test case so that's added in automatically - you don't have to maintain it in your test steps. 
+
+The steps for adding a results collector and summary report are also automatically added so we're always collecting the right level of output. 
+
+## JMeter extends Observable
+
+The jmeter runner extends Observable so will allow observers to attach and will notify them on test start and stop, giving them the name of the test plan being executed. 
+
 
 
 
