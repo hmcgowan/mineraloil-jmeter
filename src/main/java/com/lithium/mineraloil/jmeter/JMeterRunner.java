@@ -4,26 +4,39 @@ import com.lithium.mineraloil.jmeter.reports.JTLReport;
 import com.lithium.mineraloil.jmeter.reports.SummaryReport;
 import com.lithium.mineraloil.jmeter.test_elements.JMeterStep;
 import lombok.Getter;
+import org.apache.jmeter.JMeter;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.control.gui.TestPlanGui;
-import org.apache.jmeter.engine.StandardJMeterEngine;
+import org.apache.jmeter.engine.*;
 import org.apache.jmeter.protocol.http.control.CookieManager;
 import org.apache.jmeter.reporters.ResultCollector;
+import org.apache.jmeter.samplers.Remoteable;
 import org.apache.jmeter.samplers.SampleSaveConfiguration;
 import org.apache.jmeter.save.SaveService;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.testelement.TestPlan;
+import org.apache.jmeter.testelement.TestStateListener;
+import org.apache.jmeter.threads.RemoteThreadsListenerTestElement;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
+import org.apache.jorphan.logging.LoggingManager;
+import org.apache.jorphan.util.JOrphanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Observable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class JMeterRunner extends Observable {
     protected final Logger logger = LoggerFactory.getLogger(JMeterRunner.class);
@@ -39,13 +52,17 @@ public class JMeterRunner extends Observable {
     private TestPlan testPlan;
     private SummaryReport summaryResults;
     private ArrayList<JMeterStep> steps;
+    ClientJMeterEngine clientJMeterEngine;
+    protected StandardJMeterEngine jmeterRemote;
 
     public JMeterRunner(String testPlanName) {
         jmeter = new StandardJMeterEngine();
+
         jmeterBinDir = JMeterRunner.class.getClassLoader().getResource("jmeter").getPath();
         JMeterUtils.setJMeterHome(jmeterBinDir.toString());
         readProperties();
         JMeterUtils.initLocale();
+        JMeterUtils.initLogging();
         testPlanTree = new ListedHashTree();
         this.testPlanName = testPlanName;
         this.testPlanFileName = testPlanName.toLowerCase().replaceAll("\\s+", "-");
@@ -223,6 +240,8 @@ public class JMeterRunner extends Observable {
         ssc.setHostname(true);
         ssc.setThreadCounts(true);
         ssc.setSampleCount(true);
+        ssc.saveUrl();
+
         return ssc;
     }
 
@@ -234,7 +253,9 @@ public class JMeterRunner extends Observable {
         jmeter.configure(testPlanTree);
         createJMX();
         updateObserversStart();
+
         jmeter.run();
+
         updateObserversStop();
         createReportableJtl();
         jmeter.exit();
@@ -256,4 +277,179 @@ public class JMeterRunner extends Observable {
         notifyObservers(update);
     }
 
+    public void remoteRun(String remoteHost)  throws MalformedURLException, NotBoundException, RemoteException {
+
+        getCookieManager();
+        addTestSteps();
+        addJTLResultsCollector();
+        addSummaryReport();
+
+        jmeterRemote = new StandardJMeterEngine(remoteHost);
+        jmeterRemote.setProperties(JMeterUtils.getJMeterProperties());
+
+        jmeterRemote.configure(testPlanTree);
+
+        createJMX();
+        updateObserversStart();
+        try {
+            jmeterRemote.runTest();
+
+        } catch (JMeterEngineException e) {
+            e.printStackTrace();
+        }
+        updateObserversStop();
+        createReportableJtl();
+        jmeterRemote.exit();
+
+
+    }
+
+    public void remoteRun2(String remoteHost){
+
+        getCookieManager();
+        addTestSteps();
+        addJTLResultsCollector();
+        addSummaryReport();
+
+
+        DistributedRunner distributedRunner = new DistributedRunner();
+        distributedRunner.setStdout(System.out);
+        distributedRunner.setStdErr(System.err);
+
+        List<String> hosts = new ArrayList<String>();
+        hosts.add(remoteHost);
+
+        distributedRunner.init(hosts, testPlanTree);
+        distributedRunner.start();
+
+        String reaperRE = JMeterUtils.getPropDefault("rmi.thread.name", "^RMI Reaper$");
+        Thread reaper = null;
+        for(Thread t : Thread.getAllStackTraces().keySet()){
+            String name = t.getName();
+            if (name.matches(reaperRE)) {
+                reaper = t;
+            }
+        }
+
+        if (reaper != null) {
+            while(reaper.getState() == Thread.State.WAITING) {
+            }
+        }
+
+    }
+
+    public void addRemoteTestListener(){
+        testPlanTree.add(testPlanTree.getArray()[0], new RemoteThreadsListenerTestElement());
+
+        ListenToTest listener = new ListenToTest(null, null);
+        testPlanTree.add(testPlanTree.getArray()[0], listener);
+    }
+
+
+    static class ListenToTest implements TestStateListener, Runnable, Remoteable {
+        private final AtomicInteger started = new AtomicInteger(0); // keep track of remote tests
+
+        //NOT YET USED private JMeter _parent;
+
+        private final List<JMeterEngine> engines;
+
+        /**
+         * @param unused JMeter unused for now
+         * @param engines List<JMeterEngine>
+         */
+        public ListenToTest(JMeter unused, List<JMeterEngine> engines) {
+            //_parent = unused;
+            this.engines=engines;
+        }
+
+        @Override
+        public void testEnded(String host) {
+            long now=System.currentTimeMillis();
+            System.out.println("Finished remote host: " + host + " ("+now+")");
+            if (started.decrementAndGet() <= 0) {
+                Thread stopSoon = new Thread(this);
+                stopSoon.start();
+            }
+        }
+
+        @Override
+        public void testEnded() {
+            long now = System.currentTimeMillis();
+            System.out.println("Tidying up ...    @ "+new Date(now)+" ("+now+")");
+            System.out.println("... end of run");
+            checkForRemainingThreads();
+        }
+
+        @Override
+        public void testStarted(String host) {
+            started.incrementAndGet();
+            long now=System.currentTimeMillis();
+            System.out.println("Started remote host:  " + host + " ("+now+")");
+        }
+
+        @Override
+        public void testStarted() {
+            long now=System.currentTimeMillis();
+            System.out.println(JMeterUtils.getResString("running_test")+" ("+now+")");//$NON-NLS-1$
+        }
+
+        /**
+         * This is a hack to allow listeners a chance to close their files. Must
+         * implement a queue for sample responses tied to the engine, and the
+         * engine won't deliver testEnded signal till all sample responses have
+         * been delivered. Should also improve performance of remote JMeter
+         * testing.
+         */
+        @Override
+        public void run() {
+            long now = System.currentTimeMillis();
+            System.out.println("Tidying up remote @ "+new Date(now)+" ("+now+")");
+            if (engines!=null){ // it will be null unless remoteStop = true
+                System.out.println("Exitting remote servers");
+                for (JMeterEngine e : engines){
+                    e.exit();
+                }
+            }
+            try {
+                TimeUnit.SECONDS.sleep(5); // Allow listeners to close files
+            } catch (InterruptedException ignored) {
+            }
+            ClientJMeterEngine.tidyRMI(LoggingManager.getLoggerForClass());
+            System.out.println("... end of run");
+            checkForRemainingThreads();
+        }
+
+        /**
+         * Runs daemon thread which waits a short while;
+         * if JVM does not exit, lists remaining non-daemon threads on stdout.
+         */
+        private void checkForRemainingThreads() {
+            // This cannot be a JMeter class variable, because properties
+            // are not initialised until later.
+            final int REMAIN_THREAD_PAUSE =
+                    JMeterUtils.getPropDefault("jmeter.exit.check.pause", 2000); // $NON-NLS-1$
+
+            if (REMAIN_THREAD_PAUSE > 0) {
+                Thread daemon = new Thread(){
+                    @Override
+                    public void run(){
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(REMAIN_THREAD_PAUSE); // Allow enough time for JVM to exit
+                        } catch (InterruptedException ignored) {
+                        }
+                        // This is a daemon thread, which should only reach here if there are other
+                        // non-daemon threads still active
+                        System.out.println("The JVM should have exitted but did not.");
+                        System.out.println("The following non-daemon threads are still running (DestroyJavaVM is OK):");
+                        JOrphanUtils.displayThreads(false);
+                    }
+
+                };
+                daemon.setDaemon(true);
+                daemon.start();
+            } else if(REMAIN_THREAD_PAUSE<=0) {
+                System.out.println("jmeter.exit.check.pause is <= 0, JMeter won't check for unterminated non-daemon threads");
+            }
+        }
+    }
 }

@@ -73,4 +73,10 @@ public class HTTPSample {
 
     @XmlElement(name="cookies")
     private SimpleTextElement cookies;
+
+    @XmlElement(name="responseData")
+    private SimpleTextElement responseData;
+
+    @XmlElement(name="responseFile")
+    private SimpleTextElement responseFile;
 }
