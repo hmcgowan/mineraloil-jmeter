@@ -277,40 +277,14 @@ public class JMeterRunner extends Observable {
         notifyObservers(update);
     }
 
-    public void remoteRun(String remoteHost)  throws MalformedURLException, NotBoundException, RemoteException {
+    public void remoteRun(String remoteHost){
 
         getCookieManager();
         addTestSteps();
         addJTLResultsCollector();
         addSummaryReport();
 
-        jmeterRemote = new StandardJMeterEngine(remoteHost);
-        jmeterRemote.setProperties(JMeterUtils.getJMeterProperties());
-
-        jmeterRemote.configure(testPlanTree);
-
-        createJMX();
-        updateObserversStart();
-        try {
-            jmeterRemote.runTest();
-
-        } catch (JMeterEngineException e) {
-            e.printStackTrace();
-        }
-        updateObserversStop();
-        createReportableJtl();
-        jmeterRemote.exit();
-
-
-    }
-
-    public void remoteRun2(String remoteHost){
-
-        getCookieManager();
-        addTestSteps();
-        addJTLResultsCollector();
-        addSummaryReport();
-
+        this.addRemoteTestListener();
 
         DistributedRunner distributedRunner = new DistributedRunner();
         distributedRunner.setStdout(System.out);

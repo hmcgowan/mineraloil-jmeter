@@ -85,10 +85,9 @@ public class HTTPStep {
                 .name("Show Active Users Test").build();
         threadGroup.addReportableStep(login);
         jmeter.addStep(threadGroup);
-        jmeter.addRemoteTestListener();
 
         /* Now run the jmeter client which will run script on remote instance */
-        jmeter.remoteRun2(ip.getHostAddress());
+        jmeter.remoteRun(ip.getHostAddress());
 
     }
 }
