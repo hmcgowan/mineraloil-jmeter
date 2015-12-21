@@ -1,5 +1,6 @@
 package com.lithium.mineraloil.jmeter;
 
+import com.lithium.mineraloil.jmeter.reports.CreateOrUpdateESMapping;
 import com.lithium.mineraloil.jmeter.reports.JTLReport;
 import com.lithium.mineraloil.jmeter.reports.SummaryReport;
 import com.lithium.mineraloil.jmeter.test_elements.JMeterStep;
@@ -7,7 +8,10 @@ import lombok.Getter;
 import org.apache.jmeter.JMeter;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.control.gui.TestPlanGui;
-import org.apache.jmeter.engine.*;
+import org.apache.jmeter.engine.ClientJMeterEngine;
+import org.apache.jmeter.engine.DistributedRunner;
+import org.apache.jmeter.engine.JMeterEngine;
+import org.apache.jmeter.engine.StandardJMeterEngine;
 import org.apache.jmeter.protocol.http.control.CookieManager;
 import org.apache.jmeter.reporters.ResultCollector;
 import org.apache.jmeter.samplers.Remoteable;
@@ -18,6 +22,7 @@ import org.apache.jmeter.testelement.TestPlan;
 import org.apache.jmeter.testelement.TestStateListener;
 import org.apache.jmeter.threads.RemoteThreadsListenerTestElement;
 import org.apache.jmeter.util.JMeterUtils;
+import org.apache.jmeter.visualizers.backend.BackendListener;
 import org.apache.jorphan.collections.HashTree;
 import org.apache.jorphan.collections.ListedHashTree;
 import org.apache.jorphan.logging.LoggingManager;
@@ -28,9 +33,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -241,6 +243,8 @@ public class JMeterRunner extends Observable {
         ssc.setThreadCounts(true);
         ssc.setSampleCount(true);
         ssc.saveUrl();
+        ssc.setRequestHeaders(true);
+        ssc.setResponseHeaders(true);
 
         return ssc;
     }
@@ -277,7 +281,7 @@ public class JMeterRunner extends Observable {
         notifyObservers(update);
     }
 
-    public void remoteRun(String remoteHost){
+    public void remoteRun(String remoteHost) {
 
         getCookieManager();
         addTestSteps();
@@ -298,7 +302,7 @@ public class JMeterRunner extends Observable {
 
         String reaperRE = JMeterUtils.getPropDefault("rmi.thread.name", "^RMI Reaper$");
         Thread reaper = null;
-        for(Thread t : Thread.getAllStackTraces().keySet()){
+        for (Thread t : Thread.getAllStackTraces().keySet()) {
             String name = t.getName();
             if (name.matches(reaperRE)) {
                 reaper = t;
@@ -306,19 +310,46 @@ public class JMeterRunner extends Observable {
         }
 
         if (reaper != null) {
-            while(reaper.getState() == Thread.State.WAITING) {
+            while (reaper.getState() == Thread.State.WAITING) {
             }
         }
 
+        updateObserversStop();
+        createReportableJtl();
     }
 
-    public void addRemoteTestListener(){
+    public void addRemoteTestListener() {
         testPlanTree.add(testPlanTree.getArray()[0], new RemoteThreadsListenerTestElement());
 
         ListenToTest listener = new ListenToTest(null, null);
         testPlanTree.add(testPlanTree.getArray()[0], listener);
     }
 
+    public void addElasticSearchListener(String esClusterName, String runId, String elasticSearchClusterHost, int port) {
+        BackendListener backendListener = new BackendListener();
+        backendListener.setClassname("com.lithium.mineraloil.jmeter.reports.ElasticSearchListener");
+        Arguments arguments = new Arguments();
+        arguments.addArgument("elasticsearchCluster", elasticSearchClusterHost);
+        arguments.addArgument("elasticsearchPort", Integer.toString(port));
+        arguments.addArgument("indexName", "jmeter_v1");
+        arguments.addArgument("sampleType", "SampleResult");
+        arguments.addArgument("dateTimeAppendFormat", "-yyyy-MM");
+        arguments.addArgument("normalizedTime", "2015-01-01 00:00:00.000-00:00");
+        arguments.addArgument("runId", runId);
+        arguments.addArgument("clusterName", esClusterName);
+
+        backendListener.setArguments(arguments);
+
+        testPlanTree.add(testPlanTree.getArray()[0], backendListener);
+
+    }
+
+
+    public void addElasticSearchMapping(String esClusterName, String esClusterHost, int port) {
+
+        CreateOrUpdateESMapping createOrUpdateESMapping = new CreateOrUpdateESMapping(esClusterName, esClusterHost, port);
+        createOrUpdateESMapping.createMapping();
+    }
 
     static class ListenToTest implements TestStateListener, Runnable, Remoteable {
         private final AtomicInteger started = new AtomicInteger(0); // keep track of remote tests
@@ -328,18 +359,18 @@ public class JMeterRunner extends Observable {
         private final List<JMeterEngine> engines;
 
         /**
-         * @param unused JMeter unused for now
+         * @param unused  JMeter unused for now
          * @param engines List<JMeterEngine>
          */
         public ListenToTest(JMeter unused, List<JMeterEngine> engines) {
             //_parent = unused;
-            this.engines=engines;
+            this.engines = engines;
         }
 
         @Override
         public void testEnded(String host) {
-            long now=System.currentTimeMillis();
-            System.out.println("Finished remote host: " + host + " ("+now+")");
+            long now = System.currentTimeMillis();
+            System.out.println("Finished remote host: " + host + " (" + now + ")");
             if (started.decrementAndGet() <= 0) {
                 Thread stopSoon = new Thread(this);
                 stopSoon.start();
@@ -349,7 +380,7 @@ public class JMeterRunner extends Observable {
         @Override
         public void testEnded() {
             long now = System.currentTimeMillis();
-            System.out.println("Tidying up ...    @ "+new Date(now)+" ("+now+")");
+            System.out.println("Tidying up ...    @ " + new Date(now) + " (" + now + ")");
             System.out.println("... end of run");
             checkForRemainingThreads();
         }
@@ -357,14 +388,14 @@ public class JMeterRunner extends Observable {
         @Override
         public void testStarted(String host) {
             started.incrementAndGet();
-            long now=System.currentTimeMillis();
-            System.out.println("Started remote host:  " + host + " ("+now+")");
+            long now = System.currentTimeMillis();
+            System.out.println("Started remote host:  " + host + " (" + now + ")");
         }
 
         @Override
         public void testStarted() {
-            long now=System.currentTimeMillis();
-            System.out.println(JMeterUtils.getResString("running_test")+" ("+now+")");//$NON-NLS-1$
+            long now = System.currentTimeMillis();
+            System.out.println(JMeterUtils.getResString("running_test") + " (" + now + ")");//$NON-NLS-1$
         }
 
         /**
@@ -377,10 +408,10 @@ public class JMeterRunner extends Observable {
         @Override
         public void run() {
             long now = System.currentTimeMillis();
-            System.out.println("Tidying up remote @ "+new Date(now)+" ("+now+")");
-            if (engines!=null){ // it will be null unless remoteStop = true
+            System.out.println("Tidying up remote @ " + new Date(now) + " (" + now + ")");
+            if (engines != null) { // it will be null unless remoteStop = true
                 System.out.println("Exitting remote servers");
-                for (JMeterEngine e : engines){
+                for (JMeterEngine e : engines) {
                     e.exit();
                 }
             }
@@ -404,9 +435,9 @@ public class JMeterRunner extends Observable {
                     JMeterUtils.getPropDefault("jmeter.exit.check.pause", 2000); // $NON-NLS-1$
 
             if (REMAIN_THREAD_PAUSE > 0) {
-                Thread daemon = new Thread(){
+                Thread daemon = new Thread() {
                     @Override
-                    public void run(){
+                    public void run() {
                         try {
                             TimeUnit.MILLISECONDS.sleep(REMAIN_THREAD_PAUSE); // Allow enough time for JVM to exit
                         } catch (InterruptedException ignored) {
@@ -421,7 +452,7 @@ public class JMeterRunner extends Observable {
                 };
                 daemon.setDaemon(true);
                 daemon.start();
-            } else if(REMAIN_THREAD_PAUSE<=0) {
+            } else if (REMAIN_THREAD_PAUSE <= 0) {
                 System.out.println("jmeter.exit.check.pause is <= 0, JMeter won't check for unterminated non-daemon threads");
             }
         }
