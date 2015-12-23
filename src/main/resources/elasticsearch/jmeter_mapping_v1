@@ -107,6 +107,24 @@
     },
     "device": {
       "type": "string"
+    },
+    "community": {
+      "type": "string"
+    },
+    "user-agent": {
+      "type": "string"
+    },
+    "browser": {
+      "type": "string"
+    },
+    "browser-version": {
+      "type": "string"
+    },
+    "bot": {
+      "type": "string"
+    },
+    "user": {
+      "type": "string"
     }
   }
 }

@@ -2,6 +2,7 @@ package com.lithium.mineraloil.jmeter.test_elements;
 
 import com.google.common.base.Preconditions;
 import lombok.experimental.Builder;
+import org.apache.jmeter.control.LoopController;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.threads.ThreadGroup;
 import org.apache.jmeter.threads.gui.ThreadGroupGui;
@@ -38,7 +39,9 @@ public class ThreadGroupElement extends JMeterStepImpl<ThreadGroupElement> {
                                                 .continueForever(continueForever)
                                                 .isFirst(isFirst)
                                                 .build();
+
         threadGroup.setSamplerController(loopController.getLoopController());
+        ((LoopController)threadGroup.getSamplerController()).setContinueForever(continueForever);
         return threadGroup;
     }
 }

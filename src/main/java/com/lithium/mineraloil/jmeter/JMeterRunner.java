@@ -33,10 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Observable;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -56,6 +53,7 @@ public class JMeterRunner extends Observable {
     private ArrayList<JMeterStep> steps;
     ClientJMeterEngine clientJMeterEngine;
     protected StandardJMeterEngine jmeterRemote;
+    private Properties extraProperties;
 
     public JMeterRunner(String testPlanName) {
         jmeter = new StandardJMeterEngine();
@@ -96,6 +94,7 @@ public class JMeterRunner extends Observable {
         arguments.setProperty(TestElement.TEST_CLASS, "org.apache.jmeter.config.Arguments");
         arguments.setName("User Defined Variables");
         arguments.setProperty(TestElement.ENABLED, true);
+
         testPlan.setUserDefinedVariables(arguments);
         testPlan.setTestPlanClasspath("");
         return testPlan;
@@ -186,8 +185,16 @@ public class JMeterRunner extends Observable {
             throw new RuntimeException("Unable to locate file: " + jmeterProperties.getAbsolutePath());
         }
         JMeterUtils.loadJMeterProperties(jmeterProperties.getPath());
-    }
 
+        if (extraProperties !=null)
+            JMeterUtils.getJMeterProperties().putAll(extraProperties);
+
+    }
+    public void addExtraJmeterProperties(Properties properties){
+
+        extraProperties=properties;
+
+    }
     public static String getOutputDirectory() {
         String dir = ClassLoader.getSystemClassLoader().getSystemResource("").getPath() + "../jmeter";
         File file = new File(dir);
@@ -281,7 +288,7 @@ public class JMeterRunner extends Observable {
         notifyObservers(update);
     }
 
-    public void remoteRun(String remoteHost) {
+    public void remoteRun(List<String> remoteHosts) {
 
         getCookieManager();
         addTestSteps();
@@ -290,14 +297,15 @@ public class JMeterRunner extends Observable {
 
         this.addRemoteTestListener();
 
+        createJMX();
+
         DistributedRunner distributedRunner = new DistributedRunner();
         distributedRunner.setStdout(System.out);
         distributedRunner.setStdErr(System.err);
 
-        List<String> hosts = new ArrayList<String>();
-        hosts.add(remoteHost);
 
-        distributedRunner.init(hosts, testPlanTree);
+
+        distributedRunner.init(remoteHosts, testPlanTree);
         distributedRunner.start();
 
         String reaperRE = JMeterUtils.getPropDefault("rmi.thread.name", "^RMI Reaper$");

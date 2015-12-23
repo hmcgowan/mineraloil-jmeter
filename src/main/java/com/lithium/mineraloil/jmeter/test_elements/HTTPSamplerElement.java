@@ -4,8 +4,10 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.experimental.Builder;
 import org.apache.jmeter.config.Arguments;
+import org.apache.jmeter.protocol.http.control.HeaderManager;
 import org.apache.jmeter.protocol.http.control.gui.HttpTestSampleGui;
 import org.apache.jmeter.protocol.http.gui.HTTPArgumentsPanel;
+import org.apache.jmeter.protocol.http.sampler.HTTPSampler2;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy;
 import org.apache.jmeter.protocol.http.util.HTTPArgument;
 import org.apache.jmeter.testelement.TestElement;
@@ -32,6 +34,7 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
     private Boolean monitor;
     private String embeddedUrlRE;
     private String implementation;
+    private HeaderManager headerManager;
 
     public TestElement getTestElement() {
         Preconditions.checkNotNull(domain);
@@ -39,6 +42,7 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
         Preconditions.checkNotNull(path);
 
         HTTPSamplerProxy httpSampler = new HTTPSamplerProxy();
+
         httpSampler.setProperty(TestElement.GUI_CLASS, HttpTestSampleGui.class.getName().toString());
         httpSampler.setProperty(TestElement.TEST_CLASS, HTTPSamplerProxy.class.getName().toString());
         httpSampler.setName(getPath().replaceAll("\\?.*", "") + " " + method + " " + String.valueOf(isReportable).toUpperCase()); // user the path without arguments
@@ -47,6 +51,7 @@ public class HTTPSamplerElement extends JMeterStepImpl<HTTPSamplerElement> {
         httpSampler.setPort(port);
         httpSampler.setPath(path);
         httpSampler.setMethod(getOptionalValue(method, "GET"));
+        httpSampler.setHeaderManager(headerManager);
 
         // optional parameters
         httpSampler.setImplementation(getOptionalValue(implementation, "HttpClient4"));

@@ -6,6 +6,7 @@ import lithium.datainv.classifier.PageNameClassifier;
 import lithium.util.Config;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.samplers.SampleResult;
+import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jmeter.visualizers.backend.AbstractBackendListenerClient;
 import org.apache.jmeter.visualizers.backend.BackendListenerContext;
 
@@ -37,10 +38,6 @@ public class ElasticSearchListener extends AbstractBackendListenerClient {
     private TransportClient client;
     private String dateTimeAppendFormat;
     WurflClassifier wurflClassifier;
-
-    String testRun = System.getProperty("testRun");
-    String release = System.getProperty("release");
-    String revision = System.getProperty("revision");
 
     @Override
     public void handleSampleResults(List<SampleResult> results,
@@ -111,7 +108,7 @@ public class ElasticSearchListener extends AbstractBackendListenerClient {
 
     private Map<String, Object> getMap(SampleResult result) {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("RunId", testRun);
+        map.put("RunId", JMeterUtils.getPropDefault("testRun","Unknown"));
         map.put("timestamp", result.getTimeStamp());
         map.put("ResponseTime", result.getTime());
         map.put("ResponseCode", result.getResponseCode());
@@ -125,9 +122,9 @@ public class ElasticSearchListener extends AbstractBackendListenerClient {
         map.put("ErrorCount", result.getErrorCount());
         map.put("StartTime", result.getStartTime());
         map.put("EndTime", result.getEndTime());
-        map.put("release", release);
-        map.put("revision", revision);
-        //map.put("device", result.getRequestHeaders().);
+        map.put("release", JMeterUtils.getPropDefault("release","Unknown"));
+        map.put("revision", JMeterUtils.getPropDefault("revision", "Unknown"));
+        map.put("community", JMeterUtils.getPropDefault("community", "Unknown"));
 
 
         Config config = new lithium.util.Config();
