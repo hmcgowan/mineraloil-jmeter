@@ -64,6 +64,7 @@ public class LiaWarmpupPerfTest {
                 .port(port)
                 .protocol(protocol)
                 .path("${url}")
+
                 .method("GET")
                 .implementation("HttpClient4").headerManager(headerManager)
                 .build();
