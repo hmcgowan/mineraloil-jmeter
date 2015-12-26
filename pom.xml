@@ -35,6 +35,14 @@
 
     <repositories>
         <repository>
+            <id>thirdparty</id>
+            <url>http://nexus.dev.lithium.com/nexus/content/repositories/thirdparty</url>
+        </repository>
+        <repository>
+            <id>public</id>
+            <url>http://nexus.dev.lithium.com/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
             <id>lithium-internal-nexus</id>
             <name>nexus-maven-repo</name>
             <url>http://nexus.dev.lithium.com/nexus/content/repositories/releases</url>
@@ -74,13 +82,13 @@
         <dependency>
             <groupId>com.lithium.dev.common.components</groupId>
             <artifactId>common-community</artifactId>
-            <version>15.11-SNAPSHOT</version>
+            <version>15.11</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.lithium.dev.analytics.components</groupId>
             <artifactId>analytics-core</artifactId>
-            <version>15.11-SNAPSHOT</version>
+            <version>15.11</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -100,13 +108,13 @@
         <dependency>
             <groupId>com.lithium.dev.analytics.components</groupId>
             <artifactId>analytics-datainv</artifactId>
-            <version>15.11-SNAPSHOT</version>
+            <version>15.11</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.lithium.dev.common.components</groupId>
             <artifactId>common-base</artifactId>
-            <version>15.11-SNAPSHOT</version>
+            <version>15.11</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -126,7 +134,7 @@
         <dependency>
             <groupId>com.lithium.dev.common.components</groupId>
             <artifactId>common-io</artifactId>
-            <version>15.11-SNAPSHOT</version>
+            <version>15.11</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
