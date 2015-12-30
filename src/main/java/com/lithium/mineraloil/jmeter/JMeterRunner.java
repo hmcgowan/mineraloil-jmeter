@@ -128,8 +128,8 @@ public class JMeterRunner extends Observable {
         resultCollector.setProperty("ResultCollector.error_logging", false);
         SampleSaveConfiguration sampleSaveConfiguration = new SampleSaveConfiguration();
         sampleSaveConfiguration.setAsXml(true);
-        sampleSaveConfiguration.setFieldNames(false);
-        sampleSaveConfiguration.setResponseData(true);
+        sampleSaveConfiguration.setFieldNames(true);
+        sampleSaveConfiguration.setResponseData(false);
         sampleSaveConfiguration.setResponseHeaders(true);
         sampleSaveConfiguration.setFileName(true);
         sampleSaveConfiguration.setSampleCount(true);
