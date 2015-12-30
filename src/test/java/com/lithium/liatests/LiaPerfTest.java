@@ -52,7 +52,7 @@ public class LiaPerfTest {
         properties.put("revision",revision);
         properties.put("community",community);
 
-        JMeterRunner jmeter = new JMeterRunner("httpRequest");
+        JMeterRunner jmeter = new JMeterRunner("httpRequest-perftest");
         jmeter.addExtraJmeterProperties(properties);
 
         /* Create header element */

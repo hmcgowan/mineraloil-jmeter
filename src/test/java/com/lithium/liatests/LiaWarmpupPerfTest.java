@@ -50,7 +50,7 @@ public class LiaWarmpupPerfTest {
         properties.put("revision",revision);
         properties.put("community",community);*/
 
-        JMeterRunner jmeter = new JMeterRunner("httpRequest");
+        JMeterRunner jmeter = new JMeterRunner("httpRequest-warmpup");
        // jmeter.addExtraJmeterProperties(properties);
 
         /* Create header element */
