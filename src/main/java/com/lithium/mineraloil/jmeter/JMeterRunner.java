@@ -130,11 +130,11 @@ public class JMeterRunner extends Observable {
         sampleSaveConfiguration.setAsXml(true);
         sampleSaveConfiguration.setFieldNames(true);
         sampleSaveConfiguration.setResponseData(false);
-        sampleSaveConfiguration.setResponseHeaders(true);
+        sampleSaveConfiguration.setResponseHeaders(false);
         sampleSaveConfiguration.setFileName(true);
         sampleSaveConfiguration.setSampleCount(true);
         sampleSaveConfiguration.setEncoding(true);
-        sampleSaveConfiguration.setRequestHeaders(true);
+        sampleSaveConfiguration.setRequestHeaders(false);
         sampleSaveConfiguration.setMessage(true);
         sampleSaveConfiguration.setSamplerData(true);
         sampleSaveConfiguration.setHostname(true);
