@@ -109,6 +109,7 @@ public class ElasticSearchListener extends AbstractBackendListenerClient {
     private Map<String, Object> getMap(SampleResult result) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("RunId", JMeterUtils.getPropDefault("testRun","Unknown"));
+        map.put("ThreadName", result.getThreadName());
         map.put("timestamp", result.getTimeStamp());
         map.put("ResponseTime", result.getTime());
         map.put("ResponseCode", result.getResponseCode());
