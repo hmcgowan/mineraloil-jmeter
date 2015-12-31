@@ -1,6 +1,9 @@
 package com.lithium.mineraloil.jmeter.reports;
 
+import com.lithium.mineraloil.jmeter.reports.models.HTTPSample;
 import com.lithium.mineraloil.jmeter.reports.models.TestResult;
+import lithium.datainv.classifier.PageNameClassifier;
+import lithium.util.Config;
 import lombok.Getter;
 
 import javax.xml.bind.JAXBContext;
@@ -9,6 +12,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class JTLReport {
@@ -42,6 +46,21 @@ public class JTLReport {
             e.printStackTrace();
         }
     }
+    public void createReportableResultsWithPageClassification(String filename) {
+        TestResult reportableSubset = new TestResult();
+        reportableSubset.setVersion(testResult.getVersion());
+
+        reportableSubset.setHttpSamples(
+                setSampleLabel(testResult).stream()
+                        //.filter(sample -> sample.getLb().endsWith(isReportable))
+                        .collect(Collectors.toList())
+        );
+        try {
+            marshaller.marshal(reportableSubset, new File(filename));
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
 
     private TestResult parse(String filename) throws Exception {
         if (jaxbContext == null) {
@@ -52,5 +71,16 @@ public class JTLReport {
         }
         return (TestResult) unmarshaller.unmarshal(new FileInputStream(filename));
     }
+    private List<HTTPSample> setSampleLabel(TestResult testResult){
+        Config config = new lithium.util.Config();
+        config.put("tapestry.context.name", "t5");
+        PageNameClassifier pageNameClassifier = new PageNameClassifier(config);
 
+        for (int i=0;i<testResult.getHttpSamples().size();i++)
+        {
+            String pageName = pageNameClassifier.classify(testResult.getHttpSamples().get(i).getLb().split(" ")[0]);
+            testResult.getHttpSamples().get(i).setLb(pageName);
+        }
+        return testResult.getHttpSamples();
+    }
 }

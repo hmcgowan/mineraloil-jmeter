@@ -166,6 +166,13 @@ public class JMeterRunner extends Observable {
         new JTLReport(getFileName("jtl")).createReportableResults(getFileName("reportable", "jtl"));
     }
 
+    private void createReportableJtl(Boolean pageClassification) {
+        if (pageClassification)
+            new JTLReport(getFileName("jtl")).createReportableResultsWithPageClassification(getFileName("reportable", "jtl"));
+        else
+            createReportableJtl();
+    }
+
     public SummaryReport getSummaryResults() {
         if (summaryResults == null) summaryResults = new SummaryReport(getFileName("summary", "xml"));
         return summaryResults;
@@ -186,15 +193,17 @@ public class JMeterRunner extends Observable {
         }
         JMeterUtils.loadJMeterProperties(jmeterProperties.getPath());
 
-        if (extraProperties !=null)
+        if (extraProperties != null)
             JMeterUtils.getJMeterProperties().putAll(extraProperties);
 
     }
-    public void addExtraJmeterProperties(Properties properties){
 
-        extraProperties=properties;
+    public void addExtraJmeterProperties(Properties properties) {
+
+        extraProperties = properties;
 
     }
+
     public static String getOutputDirectory() {
         String dir = ClassLoader.getSystemClassLoader().getSystemResource("").getPath() + "../jmeter";
         File file = new File(dir);
@@ -304,7 +313,6 @@ public class JMeterRunner extends Observable {
         distributedRunner.setStdErr(System.err);
 
 
-
         distributedRunner.init(remoteHosts, testPlanTree);
         distributedRunner.start();
 
@@ -323,7 +331,8 @@ public class JMeterRunner extends Observable {
         }
 
         updateObserversStop();
-        createReportableJtl();
+        createReportableJtl(true);
+        distributedRunner.exit(remoteHosts);
     }
 
     public void addRemoteTestListener() {
