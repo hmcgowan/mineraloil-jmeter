@@ -12,48 +12,12 @@
         JMeter tests without the GUI
     </description>
 
-    <organization>
-        <name>Lithium Technologies</name>
-        <url>http://lithium.com</url>
-    </organization>
-
     <scm>
         <url>scm:git:git@github.com:lithiumtech/mineraloil-jmeter.git</url>
         <connection>scm:git:git@github.com:lithiumtech/mineraloil-jmeter.git</connection>
         <developerConnection>scm:git:git@github.com:lithiumtech/mineraloil-jmeter.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>lithium-releases</id>
-            <name>nexus-maven-repo</name>
-            <url>http://nexus.dev.lithium.com/nexus/content/repositories/releases</url>
-        </repository>
-    </distributionManagement>
-
-    <repositories>
-        <repository>
-            <id>lithium-internal-nexus</id>
-            <name>nexus-maven-repo</name>
-            <url>http://nexus.dev.lithium.com/nexus/content/repositories/releases</url>
-            <snapshots><enabled>false</enabled></snapshots>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>lithium-internal-nexus</id>
-            <name>nexus-maven-repo</name>
-            <url>http://nexus.dev.lithium.com/nexus/content/repositories/releases</url>
-            <snapshots><enabled>false</enabled></snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/lithiumtech/mineraloil-jmeter/issues</url>
-    </issueManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
