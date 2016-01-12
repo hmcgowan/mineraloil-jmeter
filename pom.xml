@@ -11,7 +11,7 @@
     <groupId>com.lithium.mineraloil</groupId>
     <artifactId>jmeter</artifactId>
     <name>mineraloil-jmeter</name>
-    <version>0.1.23</version>
+    <version>0.1.24</version>
     <packaging>jar</packaging>
 
     <description>
@@ -53,20 +53,6 @@
                         <encoding>UTF-8</encoding>
                         <showWarnings>true</showWarnings>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.3</version>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>jar-no-fork</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
