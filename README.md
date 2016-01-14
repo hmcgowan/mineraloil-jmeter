@@ -11,7 +11,8 @@ public class UserLoginTest {
     @Test
     public void loginTest() {
         JMeterRunner jmeter = new JMeterRunner("Login");
-        jmeter.addStep(ThreadGroupSteps.createThreadGroup("Login Test")								                     .addReportableStep(HTTPSteps.login()));
+        jmeter.addStep(ThreadGroupSteps.createThreadGroup("Login Test")
+              .addReportableStep(HTTPSteps.login()));
         jmeter.run();
         Assert.assertTrue("Test run failed. Error rate: " + jMeter.getSummaryResults().getErrorRate(),        
                           jMeter.getSummaryResults().isSuccessful());
