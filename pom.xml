@@ -9,8 +9,9 @@
     </parent>
     
     <groupId>com.lithium.mineraloil</groupId>
-    <artifactId>jmeter</artifactId>
+    <artifactId>mineraloil-jmeter</artifactId>
     <name>mineraloil-jmeter</name>
+    <url>https://github.com/lithiumtech/mineraloil-jmeter</url>
     <version>0.1.26-SNAPSHOT</version>
     <packaging>jar</packaging>
 
