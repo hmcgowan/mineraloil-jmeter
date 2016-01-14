@@ -12,7 +12,7 @@
     <artifactId>mineraloil-jmeter</artifactId>
     <name>mineraloil-jmeter</name>
     <url>https://github.com/lithiumtech/mineraloil-jmeter</url>
-    <version>0.1.26-SNAPSHOT</version>
+    <version>0.1.26</version>
     <packaging>jar</packaging>
 
     <description>
@@ -23,7 +23,7 @@
         <url>scm:git:git@github.com:lithiumtech/mineraloil-jmeter.git</url>
         <connection>scm:git:git@github.com:lithiumtech/mineraloil-jmeter.git</connection>
         <developerConnection>scm:git:git@github.com:lithiumtech/mineraloil-jmeter.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>mineraloil-jmeter-0.1.26</tag>
     </scm>
 
     <issueManagement>
