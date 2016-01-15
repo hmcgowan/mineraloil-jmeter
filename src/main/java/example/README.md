@@ -1,3 +1,5 @@
+# Running Example
+
 This example directory structure has steps and a example test.
 
 In order to run the example test we need to be running a small local HTTP Server that will respond to jmeter get 
