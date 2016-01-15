@@ -1,4 +1,4 @@
-# Running Example
+# Running an Example
 
 This example directory structure has steps and a example test.
 
