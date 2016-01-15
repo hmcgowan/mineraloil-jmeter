@@ -12,7 +12,7 @@ public class UserLoginTest {
     public void loginTest() {
         JMeterRunner jmeter = new JMeterRunner("Login");
         jmeter.addStep(ThreadGroupSteps.createThreadGroup("Login Test")
-              .addReportableStep(HTTPSteps.login()));
+                                       .addReportableStep(HTTPSteps.login()));
         jmeter.run();
         Assert.assertTrue("Test run failed. Error rate: " + jMeter.getSummaryResults().getErrorRate(),        
                           jMeter.getSummaryResults().isSuccessful());
@@ -115,7 +115,12 @@ The steps for adding a results collector and summary report are also automatical
 
 The jmeter runner extends Observable so will allow observers to attach and will notify them on test start and stop, giving them the name of the test plan being executed. 
 
+## Example Test with Steps Readme and Code
+(https://github.com/lithiumtech/mineraloil-jmeter/tree/master/src/main/java/example/README.md)
 
-
+## OUTPUT
+Mineraloil-jmeter will output .jtl and .jmx files.
+Both the .jtx and .jtl files can be directly opened with JMeter UI if needed.
+The .jtl files are also recognizable be the Jenkins Performance Plugin which displays graphs based on the data.
 
 
