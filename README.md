@@ -122,5 +122,6 @@ The jmeter runner extends Observable so will allow observers to attach and will 
 Mineraloil-jmeter will output .jtl and .jmx files.
 Both the .jtx and .jtl files can be directly opened with JMeter UI if needed.
 The .jtl files are also recognizable be the Jenkins Performance Plugin which displays graphs based on the data.
+All output files will be found in the target/jmeter directory
 
 
