@@ -6,7 +6,7 @@ that it is run from.  We have provided an html file in the resources of this pro
 
 You will need to have python installed in order to run the example.
 
-The following command run from the ExampleFiles directory will serve the Example.html file
+Run the following command from the ExampleFiles directory and it will serve the Example.html file
 
     mineraloil-jmeter/src/main/resources/ExampleFiles$ python -m SimpleHTTPServer
 
