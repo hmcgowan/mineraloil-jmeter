@@ -116,7 +116,8 @@ The steps for adding a results collector and summary report are also automatical
 The jmeter runner extends Observable so will allow observers to attach and will notify them on test start and stop, giving them the name of the test plan being executed. 
 
 ## Example Test with Steps Readme and Code
-(https://github.com/lithiumtech/mineraloil-jmeter/tree/master/src/main/java/example/README.md)
+Check out the readme in the Example directory
+(https://github.com/lithiumtech/mineraloil-jmeter/tree/master/src/main/java/example)
 
 ## OUTPUT
 Mineraloil-jmeter will output .jtl and .jmx files.
